@@ -1,0 +1,34 @@
+name: Dev Deploy
+
+on:
+  push:
+    paths:
+      - 'Place/Files/Dev/src/**'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    
+    steps:
+      - name: Run Action - checkout@v3.3.0
+        uses: actions/checkout@v3.3.0
+
+      - name: Fetch Map Place
+        run: |
+          cd Place/FetchMap
+          node Dev.js
+
+      - name: Generate Code Place
+        run: |
+          cd Place/Files/Dev
+          rojo build --output GatesProgram.rbxlx
+
+      - name: Generate Merged Place
+        run: remodel run Place/Merge/Dev.lua
+
+      - name: Publish Place
+        run: |
+          cd Place/Publish
+          node Dev.js
+          

@@ -1,0 +1,34 @@
+name: QA Testing Deploy
+
+on:
+  push:
+    paths:
+      - 'Place/Files/QATest/src/**'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    
+    steps:
+      - name: Run Action - checkout@v3.3.0
+        uses: actions/checkout@v3.3.0
+
+      - name: Fetch Map Place
+        run: |
+          cd Place/FetchMap
+          node QATest.js
+
+      - name: Generate Code Place
+        run: |
+          cd Place/Files/QATest
+          rojo build --output GatesProgram.rbxlx
+
+      - name: Generate Merged Place
+        run: remodel run Place/Merge/QATest.lua
+
+      - name: Publish Place
+        run: |
+          cd Place/Publish
+          node QATest.js
+          
